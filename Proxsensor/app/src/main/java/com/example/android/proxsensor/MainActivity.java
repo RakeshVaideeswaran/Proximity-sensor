@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import static android.os.Build.VERSION_CODES.M;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     RingtoneManager rm;
     int i;
     boolean RUN=false;
+    ProgressBar P;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         dr = rm.getRingtone(this, tone);
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         ps = sm.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        P = (ProgressBar) findViewById(R.id.pb);
 
     }
 
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         else
         {
             dr.stop();
+            P.setVisibility(View.GONE);
             T.setVisibility(View.GONE);
             RUN=true;
         }
@@ -69,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     {
         super.onPause();
         dr.stop();
+        RUN = true;
         sm.unregisterListener(this);
     }
 
@@ -76,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume()
     {
         super.onResume();
+        RUN = false;
         sm.registerListener(this,ps,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -86,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onPreExecute() {
 
         i=10;
+        P.setVisibility(View.VISIBLE);
         T.setVisibility(View.VISIBLE);
         T.setText(String.valueOf(i));
         RUN=false;
@@ -122,10 +129,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onProgressUpdate(Void... values) {
 
         T.setText(String.valueOf(i));
+        P.setProgress(i);
 
         if (i==0)
         {
             dr.play();
+            P.setVisibility(View.GONE);
             T.setVisibility(View.GONE);
             cancel(true);
         }
